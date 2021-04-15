@@ -1,0 +1,2 @@
+DROP TABLE IF EXISTS b_sladcovich_worksheet_entity_orm_worker;
+DROP TABLE IF EXISTS b_sladcovich_worksheet_entity_orm_worksheet;

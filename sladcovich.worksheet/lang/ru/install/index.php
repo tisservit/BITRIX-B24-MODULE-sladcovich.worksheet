@@ -1,0 +1,6 @@
+<?php
+$MESS['SLADCOVICH_WORKSHEET_MODULE_ID'] = 'sladcovich.worksheet';
+$MESS['SLADCOVICH_WORKSHEET_MODULE_NAME'] = 'Рабочие смены';
+$MESS['SLADCOVICH_WORKSHEET_MODULE_DESCRIPTION'] = 'Функционал рабочих смен в Битрикс 24';
+$MESS['SLADCOVICH_WORKSHEET_MODULE_PARTNER_NAME'] = 'Sladcovich';
+$MESS['SLADCOVICH_WORKSHEET_MODULE_PARTNER_URL'] = 'https://t.me/sladcovich';
