@@ -3,6 +3,7 @@
 namespace Sladcovich\Worksheet\Helpers;
 
 use \Bitrix\Main\Loader;
+
 # NON USED use \Bitrix\Crm\LeadTable;
 # NON USED use \Bitrix\Crm\DealTable;
 use \Bitrix\Crm\ContactTable;
@@ -47,7 +48,7 @@ class CrmEntityHelper
      *
      * @return array
      */
-    public function getAllWorkersContacts()
+    public function getAllWorkersContacts($select2 = true)
     {
         global $USER_FIELD_MANAGER;
         $arWorkerContacts = [];
@@ -62,10 +63,14 @@ class CrmEntityHelper
             $currentStatusValueId = $USER_FIELD_MANAGER->GetUserFieldValue('CRM_CONTACT', 'UF_WORKER_STATUS', $row['ID']);
             if ($currentStatusValueId > 0) {
                 if ($allOptions[$currentStatusValueId] == 'ACTIVE') {
-                    $arWorkerContacts[] = [
-                        'id' => $row['ID'],
-                        'text' => ($row['LAST_NAME'] . ' ' . $row['NAME'] . ' ' . $row['SECOND_NAME'])
-                    ];
+                    if ($select2 === true) {
+                        $arWorkerContacts[] = [
+                            'id' => $row['ID'],
+                            'text' => ($row['LAST_NAME'] . ' ' . $row['NAME'] . ' ' . $row['SECOND_NAME'])
+                        ];
+                    } else {
+                        $arWorkerContacts[$row['ID']] = ($row['LAST_NAME'] . ' ' . $row['NAME'] . ' ' . $row['SECOND_NAME']);
+                    }
                 }
             }
         }
@@ -100,7 +105,7 @@ class CrmEntityHelper
      * @param bool $defaultNull
      * @return array
      */
-    public function getAllClientsCompanies($defaultNull = true)
+    public function getAllClientsCompanies($select2 = true, $defaultNull = true)
     {
         global $USER_FIELD_MANAGER;
         $arClientCompanies = [];
@@ -120,10 +125,15 @@ class CrmEntityHelper
             $currentStatusValueId = $USER_FIELD_MANAGER->GetUserFieldValue('CRM_COMPANY', 'UF_CUSTOMER_CONTRACT_STATUS', $row['ID']);
             if ($currentStatusValueId > 0) {
                 if ($allOptions[$currentStatusValueId] == 'ACTIVE') {
-                    $arClientCompanies[] = [
-                        'id' => $row['ID'],
-                        'text' => $row['TITLE']
-                    ];
+                    if ($select2 === true) {
+                        $arClientCompanies[] = [
+                            'id' => $row['ID'],
+                            'text' => $row['TITLE']
+                        ];
+                    } else {
+                        $arClientCompanies[$row['ID']] = $row['TITLE'];
+                    }
+
                 }
             }
         }

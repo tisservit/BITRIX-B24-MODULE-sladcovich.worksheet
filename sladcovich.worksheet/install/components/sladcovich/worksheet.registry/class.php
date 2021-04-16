@@ -83,7 +83,7 @@ class WorksheetRegistryComponent extends CBitrixComponent implements Controllera
             ]
         ];
 
-        $arResult['COMMON']['CUSTOMERS_COMPANIES'] = CrmEntityHelper::getAllClientsCompanies(false);
+        $arResult['COMMON']['CUSTOMERS_COMPANIES'] = CrmEntityHelper::getAllClientsCompanies(true);
         $arResult['COMMON']['WORKERS_CONTACTS'] = CrmEntityHelper::getAllWorkersContacts();
 
         $this->arResult = $arResult;
@@ -154,7 +154,7 @@ class WorksheetRegistryComponent extends CBitrixComponent implements Controllera
         $columns = [
             [
                 'id' => 'COMMANDS',
-                'name' => '',
+                'name' => Loc::getMessage('SLADCOVICH_WORKSHEET_REGISTRY_MENU'),
                 'sort' => false,
                 'default' => true,
                 'width' => 20
@@ -200,6 +200,12 @@ class WorksheetRegistryComponent extends CBitrixComponent implements Controllera
         return $columns;
     }
 
+    /**
+     * Получаем данные для грида
+     *
+     * @return array
+     * @throws Exception
+     */
     protected function collectDataForGrid()
     {
         $dataForGrid = [
@@ -271,6 +277,11 @@ class WorksheetRegistryComponent extends CBitrixComponent implements Controllera
         return $dataForGrid;
     }
 
+    /**
+     * Устанавливаем настройки для грида и фильтра
+     *
+     * @throws Exception
+     */
     protected function getGridOptions()
     {
         $grid_options = new Bitrix\Main\Grid\Options($this->id);
@@ -329,6 +340,13 @@ class WorksheetRegistryComponent extends CBitrixComponent implements Controllera
         unset($filter);
     }
 
+    /**
+     * Создаем кастомные поля в строках грида
+     *
+     * @param array $arVars
+     * @param string $type
+     * @return false|string
+     */
     protected static function createField($arVars = array(), $type = '')
     {
         ob_start();
@@ -428,7 +446,6 @@ class WorksheetRegistryComponent extends CBitrixComponent implements Controllera
      */
     public static function getUserFIO($userId)
     {
-        global $USER;
         $rsUser = CUser::GetByID($userId);
         $arUser = $rsUser->Fetch();
         $userFIO = ($arUser['LAST_NAME'] . ' ' . $arUser['NAME'] . ' ' . $arUser['SECOND_NAME']);
@@ -505,10 +522,6 @@ class WorksheetRegistryComponent extends CBitrixComponent implements Controllera
     {
         global $USER;
 
-        $rsUser = CUser::GetByID($USER->GetID());
-        $arUser = $rsUser->Fetch();
-        $userFIO = ($arUser['LAST_NAME'] . ' ' . $arUser['NAME'] . ' ' . $arUser['SECOND_NAME']);
-
         $datetimeFrom = Bitrix\Main\Type\DateTime::createFromPhp(new \DateTime($datetimeFrom));
         $datetimeTo = Bitrix\Main\Type\DateTime::createFromPhp(new \DateTime($datetimeTo));
         $current = Bitrix\Main\Type\DateTime::createFromPhp(new \DateTime());
@@ -538,7 +551,7 @@ class WorksheetRegistryComponent extends CBitrixComponent implements Controllera
                 'B24_COMPANY_ID' => $clientCompany,
                 'B24_MODIFIED_BY_USER_ID' => $USER->GetID(),
                 'DATETIME_MODIFY' => $current,
-                'SEARCH_USER' => $userFIO,
+                'SEARCH_USER' => self::getUserFIO($USER->GetID()),
                 'SEARCH_COMPANY' => $companyTitle,
                 'SEARCH_WORKERS' => $workersFIO
             ]

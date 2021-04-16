@@ -96,11 +96,9 @@ Class sladcovich_worksheet extends \CModule
         if (!$this->InstallDB()) {
             return false; // break installation with error
         }
-        /*
         if (!$this->InstallFiles()) {
             return false; // break installation with error
         }
-        */
         ModuleManager::registerModule($this->MODULE_ID); // register module in system
     }
 
@@ -115,11 +113,9 @@ Class sladcovich_worksheet extends \CModule
         if (!$this->UnInstallDB()) {
             return false; // break uninstallation with error
         }
-        /*
         if (!$this->UnInstallFiles()) {
             return false; // break uninstallation with error
         }
-        */
         ModuleManager::unRegisterModule($this->MODULE_ID); // register module in system
     }
 
@@ -162,10 +158,13 @@ Class sladcovich_worksheet extends \CModule
     {
         CopyDirFiles(__DIR__ . '/dist/', $_SERVER['DOCUMENT_ROOT'] . '/local/dist/sladcovich/', true, true);
         CopyDirFiles(__DIR__ . '/components/sladcovich/', $_SERVER['DOCUMENT_ROOT'] . '/local/components/sladcovich/', true, true);
+        CopyDirFiles(__DIR__ . '/worksheet/', $_SERVER['DOCUMENT_ROOT'] . '/worksheet/', true, true);
 
-        // todo: WARNING !!! this is rewrite default bitrix components in /local/components/bitrix/ - better find another decision in future
-        // create additional tab in deal card
-        CopyDirFiles(__DIR__ . '/templates/bitrix24/components/bitrix/crm.company.details/', $_SERVER['DOCUMENT_ROOT'] . '/bitrix/templates/bitrix24/components/bitrix/crm.company.details/', true, true);
+        CopyDirFiles(__DIR__ . '/templates/bitrix24/components/bitrix/main.ui.filter/worksheet_registry_filter/', $_SERVER['DOCUMENT_ROOT'] . '/bitrix/templates/bitrix24/components/bitrix/main.ui.filter/worksheet_registry_filter/', true, true);
+        CopyDirFiles(__DIR__ . '/templates/bitrix24/components/bitrix/system.field.view/sladcovich_user/', $_SERVER['DOCUMENT_ROOT'] . '/bitrix/templates/bitrix24/components/bitrix/system.field.view/sladcovich_user/', true, true);
+        CopyDirFiles(__DIR__ . '/templates/bitrix24/components/bitrix/system.field.view/sladcovich_crm_company/', $_SERVER['DOCUMENT_ROOT'] . '/bitrix/templates/bitrix24/components/bitrix/system.field.view/sladcovich_crm_company/', true, true);
+        CopyDirFiles(__DIR__ . '/templates/bitrix24/components/bitrix/system.field.view/sladcovich_crm_contact_workers/', $_SERVER['DOCUMENT_ROOT'] . '/bitrix/templates/bitrix24/components/bitrix/system.field.view/sladcovich_crm_contact_workers/', true, true);
+        CopyDirFiles(__DIR__ . '/templates/bitrix24/components/bitrix/system.field.view/sladcovich_grid_row_commands/', $_SERVER['DOCUMENT_ROOT'] . '/bitrix/templates/bitrix24/components/bitrix/system.field.view/sladcovich_grid_row_commands/', true, true);
 
         return true;
     }
@@ -179,10 +178,13 @@ Class sladcovich_worksheet extends \CModule
     {
         Directory::deleteDirectory($_SERVER['DOCUMENT_ROOT'] . '/local/dist/sladcovich/');
         Directory::deleteDirectory($_SERVER['DOCUMENT_ROOT'] . '/local/components/sladcovich/');
+        Directory::deleteDirectory($_SERVER['DOCUMENT_ROOT'] . '/worksheet/');
 
-        // todo: WARNING !!! this is delete default bitrix components in /local/components/bitrix/ - better find another decision in future
-        // create additional tab in deal card
-        Directory::deleteDirectory($_SERVER['DOCUMENT_ROOT'] . '/bitrix/templates/bitrix24/components/bitrix/crm.company.details/');
+        Directory::deleteDirectory($_SERVER['DOCUMENT_ROOT'] . '/bitrix/templates/bitrix24/components/bitrix/main.ui.filter/worksheet_registry_filter/');
+        Directory::deleteDirectory($_SERVER['DOCUMENT_ROOT'] . '/bitrix/templates/bitrix24/components/bitrix/system.field.view/sladcovich_user/');
+        Directory::deleteDirectory($_SERVER['DOCUMENT_ROOT'] . '/bitrix/templates/bitrix24/components/bitrix/system.field.view/sladcovich_crm_company/');
+        Directory::deleteDirectory($_SERVER['DOCUMENT_ROOT'] . '/bitrix/templates/bitrix24/components/bitrix/system.field.view/sladcovich_crm_contact_workers/');
+        Directory::deleteDirectory($_SERVER['DOCUMENT_ROOT'] . '/bitrix/templates/bitrix24/components/bitrix/system.field.view/sladcovich_grid_row_commands/');
 
         return true;
     }

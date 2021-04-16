@@ -1,0 +1,6 @@
+<?
+$MESS['SLADCOVICH_WORKSHEET_CREATE_NAME'] = 'Создание рабочей смены';
+$MESS['SLADCOVICH_WORKSHEET_CREATE_DESCRIPTION'] = 'Создание рабочей смены';
+$MESS['SLADCOVICH_WORKSHEET_CREATE_PACKAGE'] = 'Sladcovich - Рабочие смены';
+
+$MESS['SLADCOVICH_WORKSHEET_CREATE_'] = '';

@@ -40,7 +40,7 @@ class WorksheetCreateComponent extends CBitrixComponent implements Controllerabl
     public function configureActions()
     {
         return [
-            'test' => ['test' => []],
+            'createNewWorksheet' => ['createNewWorksheet' => []],
         ];
     }
 
