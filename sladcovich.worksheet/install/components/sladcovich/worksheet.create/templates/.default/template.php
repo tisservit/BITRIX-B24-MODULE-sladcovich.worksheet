@@ -134,6 +134,16 @@ Bitrix\Main\Page\Asset::getInstance()->addJs('/local/dist/sladcovich/select2/js/
             let clientCompany = $('#sladcovich-worksheet__js_select2_company').val();
             let workersContacts = $('#sladcovich-worksheet__js_select2_contact').val();
 
+            if (datetimeTo < datetimeFrom || datetimeTo === datetimeFrom) {
+                alert('<?= GetMessage('SLADCOVICH_WORKSHEET_CREATE_DATETIME_ERROR')?>');
+                return;
+            }
+
+            if (clientCompany === 'delete') {
+                alert('<?= GetMessage('SLADCOVICH_WORKSHEET_CREATE_CUSTOMER_PLACEHOLDER')?>');
+                return;
+            }
+
             BX.ajax.runComponentAction('sladcovich:worksheet.create', 'createNewWorksheet', {
                 mode: 'class', // это означает, что мы хотим вызывать действие из class.php
                 data: {

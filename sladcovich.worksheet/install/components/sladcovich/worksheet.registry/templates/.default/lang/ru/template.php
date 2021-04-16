@@ -14,4 +14,6 @@ $MESS['SLADCOVICH_WORKSHEET_REGISTRY_POPUP_EMPLOYEE_NOT_FOUND'] = 'Работн�
 $MESS['SLADCOVICH_WORKSHEET_REGISTRY_POPUP_CHANGE'] = 'Изменить';
 $MESS['SLADCOVICH_WORKSHEET_REGISTRY_POPUP_CANCEL'] = 'Отменить';
 
+$MESS['SLADCOVICH_WORKSHEET_REGISTRY_POPUP_DATETIME_ERROR'] = 'Дата и время "Окончание смены" не может быть меньше или равной дате и времени "Начало смены"';
+
 $MESS['SLADCOVICH_WORKSHEET_REGISTRY_'] = '';

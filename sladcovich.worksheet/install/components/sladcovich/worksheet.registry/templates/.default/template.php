@@ -129,177 +129,211 @@ CJSCore::Init(['popup']);
                 },
             }).then(function (response) {
                 // success
+
                 let b24Company = response.data.B24_COMPANY_ID;
                 let datetimeFrom = response.data.DATETIME_START;
                 let datetimeTo = response.data.DATETIME_END;
                 let workers = response.data.WORKERS
 
-                console.log('SLADCOVICH - ERROR - START');
-                console.log(b24Company);
-                console.log(datetimeFrom);
-                console.log(datetimeTo);
-                console.log(workers);
-                console.log('SLADCOVICH - ERROR - END');
+                datetimeFrom = datetimeFrom.slice(0, -6);
+                datetimeTo = datetimeTo.slice(0, -6);
+
+                let customersPreset = <?=\Bitrix\Main\Web\Json::encode($arResult['COMMON']['CUSTOMERS_COMPANIES']);?>;
+                let workersPreset = <?=\Bitrix\Main\Web\Json::encode($arResult['COMMON']['WORKERS_CONTACTS']);?>;
+
+                // Подставляем компанию / клиента
+                customersPreset.forEach(function (item) {
+                    if (item.id == b24Company) {
+                        item.selected = 'true';
+                    }
+                });
+
+                // Подставляем контакты / работников
+                workersPreset.forEach(function (item) {
+
+                    workers.forEach(function (itemSub) {
+                        if (item.id == itemSub) {
+                            item.selected = 'true';
+                        }
+                    });
+                });
+
+                let popupContent = '' +
+                    '<div class="container-fluid">' +
+                    '<form id="sladcovich-worksheet__form_popup">' +
+                    '<div class="row">' +
+                    '<div class="col-md-12">' +
+                    '<div class="card">' +
+                    '<h5 class="card-header"><?= GetMessage("SLADCOVICH_WORKSHEET_REGISTRY_POPUP_EDIT_TITLE") ?></h5>' +
+                    '<div class="card-body">' +
+                    '<div class="container-fluid">' +
+                    '<div class="row pt-3">' +
+                    '<div class="col-2"><?= GetMessage("SLADCOVICH_WORKSHEET_REGISTRY_POPUP_DATETIME_FROM") ?></div>' +
+                    '<div class="col-2">' +
+                    '<input ' +
+                    'id="sladcovich-worksheet__datetime_from" ' +
+                    'type="datetime-local" ' +
+                    'class="form-control sladcovich-worksheet__input_datetime" ' +
+                    'value="' + datetimeFrom + '"' +
+                    'required ' +
+                    '/>' +
+                    '</div>' +
+                    '<div class="col-1"><?= GetMessage("SLADCOVICH_WORKSHEET_REGISTRY_POPUP_CUSTOMER") ?></div>' +
+                    '<div class="col-7">' +
+                    '<select ' +
+                    'name="sladcovich-worksheet__js_select2_company[]" ' +
+                    'class="sladcovich-worksheet__js_select2" ' +
+                    'id="sladcovich-worksheet__js_select2_company" ' +
+                    'required>' +
+                    '</select>' +
+                    '</div>' +
+                    '</div>' +
+                    '<div class="row pt-3">' +
+                    '<div class="col-2"><?= GetMessage("SLADCOVICH_WORKSHEET_REGISTRY_POPUP_DATETIME_TO") ?></div>' +
+                    '<div class="col-2">' +
+                    '<input ' +
+                    'name="sladcovich-worksheet__datetime_to" ' +
+                    'id="sladcovich-worksheet__datetime_to" ' +
+                    'type="datetime-local" ' +
+                    'class="form-control sladcovich-worksheet__input_datetime" ' +
+                    'value="' + datetimeTo + '"' +
+                    'required' +
+                    '/>' +
+                    '</div>' +
+                    '<div class="col-1"><?= GetMessage("SLADCOVICH_WORKSHEET_REGISTRY_POPUP_EMPLOYEES") ?></div>' +
+                    '<div class="col-7">' +
+                    '<select ' +
+                    'name="sladcovich-worksheet__js_select2_contact[]" ' +
+                    'multiple="multiple" ' +
+                    'class="sladcovich-worksheet__js_select2" ' +
+                    'id="sladcovich-worksheet__js_select2_contact" ' +
+                    'required>' +
+                    '</select>' +
+                    '</div>' +
+                    '</div>' +
+                    '</div>' +
+                    '</div>' +
+                    '<div class="card-footer">' +
+                    '<button type="submit" class="ui-btn ui-btn-success ui-btn-lg">' +
+                    '<?= GetMessage("SLADCOVICH_WORKSHEET_REGISTRY_POPUP_CHANGE") ?>' +
+                    '</button>' +
+                    '<span class="ui-btn ui-btn-primary ui-btn-lg" id="sladcovich-worksheet__form-popup-cancel">' +
+                    '<?= GetMessage("SLADCOVICH_WORKSHEET_REGISTRY_POPUP_CANCEL") ?>' +
+                    '</span>' +
+                    '</div>' +
+                    '</div>' +
+                    '</div>' +
+                    '</div>' +
+                    '</form>' +
+                    '</div>' +
+                    '';
+
+                let popup = BX.PopupWindowManager.create("form-popup-edit", BX('element'), {
+                    content: popupContent,
+                    width: 1600, // ширина окна
+                    height: 260, // высота окна
+                    zIndex: 100, // z-index
+                    closeIcon: {
+                        // объект со стилями для иконки закрытия, при null - иконки не будет
+                        opacity: 1
+                    },
+                    closeByEsc: true, // закрытие окна по esc
+                    darkMode: false, // окно будет светлым или темным
+                    autoHide: false, // закрытие при клике вне окна
+                    draggable: true, // можно двигать или нет
+                    resizable: false, // можно ресайзить
+                    lightShadow: true, // использовать светлую тень у окна
+                    angle: false, // появится уголок
+                    overlay: {
+                        // объект со стилями фона
+                        backgroundColor: 'black',
+                        opacity: 500
+                    },
+                    events: {
+                        onPopupShow: function () {
+                            // Событие при показе окна
+                        },
+                        onPopupClose: function () {
+                            // Событие при закрытии окна
+                            popup.destroy();
+                        }
+                    }
+                });
+
+                popup.show();
+
+                // Добавляем компании в select2
+                $('#sladcovich-worksheet__js_select2_company').select2({
+                    data: customersPreset,
+                    language: {
+                        noResults: function () {
+                            return '<?=GetMessage('SLADCOVICH_WORKSHEET_REGISTRY_POPUP_CUSTOMER_NOT_FOUND')?>';
+                        }
+                    },
+                    placeholder: '<?=GetMessage('SLADCOVICH_WORKSHEET_REGISTRY_POPUP_CUSTOMER_PLACEHOLDER')?>',
+                    allowClear: true
+                });
+
+                // Добавляем контакты в select2
+                $('#sladcovich-worksheet__js_select2_contact').select2({
+                    data: workersPreset,
+                    language: {
+                        noResults: function () {
+                            return '<?=GetMessage('SLADCOVICH_WORKSHEET_REGISTRY_POPUP_EMPLOYEE_NOT_FOUND')?>';
+                        }
+                    },
+                    placeholder: '<?=GetMessage('SLADCOVICH_WORKSHEET_REGISTRY_POPUP_EMPLOYEE_PLACEHOLDER')?>',
+                    allowClear: true
+                });
+
+                // ( кнопка = отменить ) - закрываем popup
+                $(document).on('click', '#sladcovich-worksheet__form-popup-cancel', function (e) {
+                    $('.popup-window-close-icon').trigger('click');
+                });
+
+                // ( кнопка = изменить ) - сохраняем данные, обновляем грид и закрываем popup
+                $('#sladcovich-worksheet__form_popup').on('submit', function (e) {
+                    e.preventDefault();
+
+                    let datetimeFromPopup = $('#sladcovich-worksheet__datetime_from').val();
+                    let datetimeToPopup = $('#sladcovich-worksheet__datetime_to').val();
+                    let clientCompanyPopup = $('#sladcovich-worksheet__js_select2_company').val();
+                    let workersContactsPopup = $('#sladcovich-worksheet__js_select2_contact').val();
+
+                    if (datetimeToPopup < datetimeFromPopup || datetimeToPopup === datetimeFromPopup) {
+                        alert('<?= GetMessage('SLADCOVICH_WORKSHEET_REGISTRY_POPUP_DATETIME_ERROR')?>');
+                        return;
+                    }
+
+                    BX.ajax.runComponentAction('sladcovich:worksheet.registry', 'worksheetUpdate', {
+                        mode: 'class', // это означает, что мы хотим вызывать действие из class.php
+                        data: {
+                            worksheetId: worksheetId,
+                            datetimeFrom: datetimeFromPopup,
+                            datetimeTo: datetimeToPopup,
+                            clientCompany: clientCompanyPopup,
+                            workersContacts: workersContactsPopup
+                        },
+                    }).then(function (response) {
+                        // success
+                        if (gridObject.hasOwnProperty('instance')) {
+                            gridObject.instance.reloadTable('POST', reloadParams);
+                            $('.popup-window-close-icon').trigger('click');
+                        }
+                    }, function (response) {
+                        // error
+                        console.log('SLADCOVICH - START');
+                        console.log(response);
+                        console.log('SLADCOVICH - END');
+                    });
+
+                });
 
             }, function (response) {
                 // error
                 console.log('SLADCOVICH - START');
                 console.log(response);
                 console.log('SLADCOVICH - END');
-            });
-
-            let popupContent = '' +
-                '<div class="container-fluid">' +
-                '<form id="sladcovich-worksheet__form_popup">' +
-                '<div class="row">' +
-                '<div class="col-md-12">' +
-                '<div class="card">' +
-                '<h5 class="card-header"><?= GetMessage("SLADCOVICH_WORKSHEET_REGISTRY_POPUP_EDIT_TITLE") ?></h5>' +
-                '<div class="card-body">' +
-                '<div class="container-fluid">' +
-                '<div class="row pt-3">' +
-                '<div class="col-2"><?= GetMessage("SLADCOVICH_WORKSHEET_REGISTRY_POPUP_DATETIME_FROM") ?></div>' +
-                '<div class="col-2">' +
-                '<input ' +
-                'id="sladcovich-worksheet__datetime_from" ' +
-                'type="datetime-local" ' +
-                'class="form-control sladcovich-worksheet__input_datetime" ' +
-                'value="'+datetimeFrom+'"' +
-                'required ' +
-                '/>' +
-                '</div>' +
-                '<div class="col-1"><?= GetMessage("SLADCOVICH_WORKSHEET_REGISTRY_POPUP_CUSTOMER") ?></div>' +
-                '<div class="col-7">' +
-                '<select ' +
-                'name="sladcovich-worksheet__js_select2_company[]" ' +
-                'class="sladcovich-worksheet__js_select2" ' +
-                'id="sladcovich-worksheet__js_select2_company" ' +
-                'required>' +
-                '</select>' +
-                '</div>' +
-                '</div>' +
-                '<div class="row pt-3">' +
-                '<div class="col-2"><?= GetMessage("SLADCOVICH_WORKSHEET_REGISTRY_POPUP_DATETIME_TO") ?></div>' +
-                '<div class="col-2">' +
-                '<input ' +
-                'name="sladcovich-worksheet__datetime_to" ' +
-                'id="sladcovich-worksheet__datetime_to" ' +
-                'type="datetime-local" ' +
-                'class="form-control sladcovich-worksheet__input_datetime" ' +
-                'value="'+datetimeTo+'"' +
-                'required' +
-                '/>' +
-                '</div>' +
-                '<div class="col-1"><?= GetMessage("SLADCOVICH_WORKSHEET_REGISTRY_POPUP_EMPLOYEES") ?></div>' +
-                '<div class="col-7">' +
-                '<select ' +
-                'name="sladcovich-worksheet__js_select2_contact[]" ' +
-                'multiple="multiple" ' +
-                'class="sladcovich-worksheet__js_select2" ' +
-                'id="sladcovich-worksheet__js_select2_contact" ' +
-                'required>' +
-                '</select>' +
-                '</div>' +
-                '</div>' +
-                '</div>' +
-                '</div>' +
-                '<div class="card-footer">' +
-                '<button type="submit" class="ui-btn ui-btn-success ui-btn-lg">' +
-                '<?= GetMessage("SLADCOVICH_WORKSHEET_REGISTRY_POPUP_CHANGE") ?>' +
-                '</button>' +
-                '<span class="ui-btn ui-btn-primary ui-btn-lg">' +
-                '<?= GetMessage("SLADCOVICH_WORKSHEET_REGISTRY_POPUP_CANCEL") ?>' +
-                '</span>' +
-                '</div>' +
-                '</div>' +
-                '</div>' +
-                '</div>' +
-                '</form>' +
-                '</div>' +
-                '';
-
-            let popup = BX.PopupWindowManager.create("popup-message", BX('element'), {
-                content: popupContent,
-                width: 1600, // ширина окна
-                height: 260, // высота окна
-                zIndex: 100, // z-index
-                closeIcon: {
-                    // объект со стилями для иконки закрытия, при null - иконки не будет
-                    opacity: 1
-                },
-                closeByEsc: true, // закрытие окна по esc
-                darkMode: false, // окно будет светлым или темным
-                autoHide: false, // закрытие при клике вне окна
-                draggable: true, // можно двигать или нет
-                resizable: false, // можно ресайзить
-                lightShadow: true, // использовать светлую тень у окна
-                angle: false, // появится уголок
-                overlay: {
-                    // объект со стилями фона
-                    backgroundColor: 'black',
-                    opacity: 500
-                },
-                // buttons: [
-                //     new BX.PopupWindowButton({
-                //         text: 'Сохранить', // текст кнопки
-                //         id: 'sladcovich-worksheet__popup-save', // идентификатор
-                //         className: 'ui-btn ui-btn-success', // доп. классы
-                //         events: {
-                //             click: function () {
-                //                 // Событие при клике на кнопку
-                //                 // Сохранить исполнителей к работе, а также добавить кол-во исполнителей в кнопке
-                //                 // в главной таблицу
-                //
-                //             }
-                //         }
-                //     }),
-                //     new BX.PopupWindowButton({
-                //         text: 'ОК', // текст кнопки
-                //         id: 'sladcovich-worksheet__popup-cancel',
-                //         className: 'ui-btn ui-btn-primary',
-                //         events: {
-                //             click: function () {
-                //                 // Событие при клике на кнопку
-                //                 popup.destroy();
-                //             }
-                //         }
-                //     })
-                // ],
-                events: {
-                    onPopupShow: function () {
-                        // Событие при показе окна
-                    },
-                    onPopupClose: function () {
-                        // Событие при закрытии окна
-                        popup.destroy();
-                    }
-                }
-            });
-
-            popup.show();
-
-            // Добавляем компании в select2
-            $('#sladcovich-worksheet__js_select2_company').select2({
-                data: <?=\Bitrix\Main\Web\Json::encode($arResult['COMMON']['CUSTOMERS_COMPANIES']);?>,
-                language: {
-                    noResults: function () {
-                        return '<?=GetMessage('SLADCOVICH_WORKSHEET_REGISTRY_POPUP_CUSTOMER_NOT_FOUND')?>';
-                    }
-                },
-                placeholder: '<?=GetMessage('SLADCOVICH_WORKSHEET_REGISTRY_POPUP_CUSTOMER_PLACEHOLDER')?>',
-                allowClear: true
-            });
-
-            // Добавляем контакты в select2
-            $('#sladcovich-worksheet__js_select2_contact').select2({
-                data: <?=\Bitrix\Main\Web\Json::encode($arResult['COMMON']['WORKERS_CONTACTS']);?>,
-                language: {
-                    noResults: function () {
-                        return '<?=GetMessage('SLADCOVICH_WORKSHEET_REGISTRY_POPUP_EMPLOYEE_NOT_FOUND')?>';
-                    }
-                },
-                placeholder: '<?=GetMessage('SLADCOVICH_WORKSHEET_REGISTRY_POPUP_EMPLOYEE_PLACEHOLDER')?>',
-                allowClear: true
             });
 
         });

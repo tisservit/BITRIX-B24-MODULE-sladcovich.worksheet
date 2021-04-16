@@ -18,4 +18,6 @@ $MESS['SLADCOVICH_WORKSHEET_CREATE_EMPLOYEE_PLACEHOLDER'] = 'Выберите р
 $MESS['SLADCOVICH_WORKSHEET_CREATE_CUSTOMER_NOT_FOUND'] = 'Клиент не найден';
 $MESS['SLADCOVICH_WORKSHEET_CREATE_EMPLOYEE_NOT_FOUND'] = 'Работник не найден';
 
+$MESS['SLADCOVICH_WORKSHEET_CREATE_DATETIME_ERROR'] = 'Дата и время "Окончание смены" не может быть меньше или равной дате и времени "Начало смены"';
+
 $MESS['SLADCOVICH_WORKSHEET_CREATE_'] = '';

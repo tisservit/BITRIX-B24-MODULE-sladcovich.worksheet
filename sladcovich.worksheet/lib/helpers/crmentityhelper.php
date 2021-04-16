@@ -97,13 +97,18 @@ class CrmEntityHelper
     /**
      * Получаем компании со статусом договора - ACTIVE
      *
+     * @param bool $defaultNull
      * @return array
      */
-    public function getAllClientsCompanies()
+    public function getAllClientsCompanies($defaultNull = true)
     {
         global $USER_FIELD_MANAGER;
         $arClientCompanies = [];
-        $arClientCompanies[] = ['id' => 'delete', 'text' => 'Выберите клиента'];
+
+        if ($defaultNull == true) {
+            $arClientCompanies[] = ['id' => 'delete', 'text' => 'Выберите клиента'];
+        }
+
         $allOptions = UserFieldHelper::getAllCustomerContractStatusValues();
 
         $res = \Bitrix\Crm\CompanyTable::getList([

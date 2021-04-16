@@ -50,7 +50,7 @@ class WorksheetRegistryComponent extends CBitrixComponent implements Controllera
     {
         return [
             'worksheetCopy' => ['worksheetCopy' => []],
-            'worksheetEdit' => ['worksheetEdit' => []],
+            'worksheetUpdate' => ['worksheetUpdate' => []],
             'worksheetDelete' => ['worksheetDelete' => []],
             'getWorksheetById' => ['getWorksheetById' => []],
         ];
@@ -83,7 +83,7 @@ class WorksheetRegistryComponent extends CBitrixComponent implements Controllera
             ]
         ];
 
-        $arResult['COMMON']['CUSTOMERS_COMPANIES'] = CrmEntityHelper::getAllClientsCompanies();
+        $arResult['COMMON']['CUSTOMERS_COMPANIES'] = CrmEntityHelper::getAllClientsCompanies(false);
         $arResult['COMMON']['WORKERS_CONTACTS'] = CrmEntityHelper::getAllWorkersContacts();
 
         $this->arResult = $arResult;
@@ -494,10 +494,77 @@ class WorksheetRegistryComponent extends CBitrixComponent implements Controllera
      * Обновляем рабочую смену
      *
      * @param $worksheetId
+     * @param $datetimeFrom
+     * @param $datetimeTo
+     * @param $clientCompany
+     * @param $workersContacts
      * @return bool
+     * @throws Exception
      */
-    public function worksheetEditAction($worksheetId)
+    public function worksheetUpdateAction($worksheetId ,$datetimeFrom ,$datetimeTo, $clientCompany, $workersContacts)
     {
+        global $USER;
+
+        $rsUser = CUser::GetByID($USER->GetID());
+        $arUser = $rsUser->Fetch();
+        $userFIO = ($arUser['LAST_NAME'] . ' ' . $arUser['NAME'] . ' ' . $arUser['SECOND_NAME']);
+
+        $datetimeFrom = Bitrix\Main\Type\DateTime::createFromPhp(new \DateTime($datetimeFrom));
+        $datetimeTo = Bitrix\Main\Type\DateTime::createFromPhp(new \DateTime($datetimeTo));
+        $current = Bitrix\Main\Type\DateTime::createFromPhp(new \DateTime());
+
+        $companyTitle = CrmEntityHelper::getCompanyTitle($clientCompany);
+        $arWorkersFIO = [];
+        $arNewWorkersId = [];
+
+        $workersFIO = '';
+        foreach ($workersContacts as $workerID) {
+            $workersFIO = $workersFIO . CrmEntityHelper::getContactFIO($workerID) . ' ';
+        }
+
+        $res = WorkerTable::getList([
+            'select' => ['ID'],
+            'filter' => ['WORKSHEET_ID' => $worksheetId]
+        ]);
+        while ($row = $res->fetch()) {
+            WorkerTable::delete($row['ID']);
+        }
+
+        $res = WorksheetTable::update(
+            $worksheetId,
+            [
+                'DATETIME_START' => $datetimeFrom,
+                'DATETIME_END' => $datetimeTo,
+                'B24_COMPANY_ID' => $clientCompany,
+                'B24_MODIFIED_BY_USER_ID' => $USER->GetID(),
+                'DATETIME_MODIFY' => $current,
+                'SEARCH_USER' => $userFIO,
+                'SEARCH_COMPANY' => $companyTitle,
+                'SEARCH_WORKERS' => $workersFIO
+            ]
+        );
+
+        if ($res->isSuccess()) {
+
+            foreach ($workersContacts as $worker) {
+                $res = WorkerTable::add([
+                    'WORKSHEET_ID' => $worksheetId,
+                    'B24_CONTACT_ID' => intval($worker),
+                    'B24_MODIFIED_BY_USER_ID' => $USER->GetID(),
+                    'DATETIME_MODIFY' => $current,
+                ]);
+
+                if ($res->isSuccess()) {
+
+                    $newWorkerId = $res->getId();
+                    $arNewWorkersId[] = $newWorkerId;
+
+                }
+                $arWorkersFIO[] = CrmEntityHelper::getContactFIO($worker);
+            }
+
+            return true;
+        }
 
     }
 
@@ -535,11 +602,11 @@ class WorksheetRegistryComponent extends CBitrixComponent implements Controllera
         $arWorkersId = [];
 
         $res = WorkerTable::getList([
-            'select' => ['ID'],
+            'select' => ['B24_CONTACT_ID'],
             'filter' => ['WORKSHEET_ID' => $worksheetId],
         ]);
         while ($row = $res->fetch()) {
-            $arWorkersId[] = $row['ID'];
+            $arWorkersId[] = $row['B24_CONTACT_ID'];
         }
 
         $arWorksheet = [];
