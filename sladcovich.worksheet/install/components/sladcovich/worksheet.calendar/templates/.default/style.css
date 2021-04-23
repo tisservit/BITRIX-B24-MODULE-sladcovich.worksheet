@@ -1,0 +1,11 @@
+.sladcovich-worksheet-calendar__layout {
+    background-color: white;
+}
+.tippy-box {
+    background-color: white;
+    width: 1px;
+    height: 1px;
+}
+.fc-scroller {
+  overflow: visible !important;
+}

@@ -1,0 +1,6 @@
+<?
+$MESS['SLADCOVICH_WORKSHEET_CALENDAR_NAME'] = 'Календарь рабочих смен';
+$MESS['SLADCOVICH_WORKSHEET_CALENDAR_DESCRIPTION'] = 'Календарь рабочей смены';
+$MESS['SLADCOVICH_WORKSHEET_CALENDAR_PACKAGE'] = 'Sladcovich - Рабочие смены';
+
+$MESS['SLADCOVICH_WORKSHEET_CALENDAR_'] = '';

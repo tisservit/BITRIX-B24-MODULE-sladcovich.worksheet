@@ -99,6 +99,9 @@ Class sladcovich_worksheet extends \CModule
         if (!$this->InstallFiles()) {
             return false; // break installation with error
         }
+        if (!$this->InstallEvents()) {
+            return false; // break installation with error
+        }
         ModuleManager::registerModule($this->MODULE_ID); // register module in system
     }
 
@@ -116,6 +119,10 @@ Class sladcovich_worksheet extends \CModule
         if (!$this->UnInstallFiles()) {
             return false; // break uninstallation with error
         }
+        if (!$this->UnInstallEvents()) {
+            return false; // break uninstallation with error
+        }
+
         ModuleManager::unRegisterModule($this->MODULE_ID); // register module in system
     }
 
@@ -156,15 +163,27 @@ Class sladcovich_worksheet extends \CModule
      */
     public function InstallFiles()
     {
+        // Добавление css и js
         CopyDirFiles(__DIR__ . '/dist/', $_SERVER['DOCUMENT_ROOT'] . '/local/dist/sladcovich/', true, true);
-        CopyDirFiles(__DIR__ . '/components/sladcovich/', $_SERVER['DOCUMENT_ROOT'] . '/local/components/sladcovich/', true, true);
+
+        // Добавление компонентов sladcovich
+        CopyDirFiles(__DIR__ . '/components/sladcovich/worksheet.calendar/', $_SERVER['DOCUMENT_ROOT'] . '/local/components/sladcovich/worksheet.calendar/', true, true);
+        CopyDirFiles(__DIR__ . '/components/sladcovich/worksheet.create/', $_SERVER['DOCUMENT_ROOT'] . '/local/components/sladcovich/worksheet.create/', true, true);
+        CopyDirFiles(__DIR__ . '/components/sladcovich/worksheet.registry/', $_SERVER['DOCUMENT_ROOT'] . '/local/components/sladcovich/worksheet.registry/', true, true);
+        CopyDirFiles(__DIR__ . '/components/sladcovich/worksheet.statistic/', $_SERVER['DOCUMENT_ROOT'] . '/local/components/sladcovich/worksheet.statistic/', true, true);
+
+        // Добавление раздела сайта
         CopyDirFiles(__DIR__ . '/worksheet/', $_SERVER['DOCUMENT_ROOT'] . '/worksheet/', true, true);
 
+        // Добавление шаблонов компонентов Bitrix
         CopyDirFiles(__DIR__ . '/templates/bitrix24/components/bitrix/main.ui.filter/worksheet_registry_filter/', $_SERVER['DOCUMENT_ROOT'] . '/bitrix/templates/bitrix24/components/bitrix/main.ui.filter/worksheet_registry_filter/', true, true);
         CopyDirFiles(__DIR__ . '/templates/bitrix24/components/bitrix/system.field.view/sladcovich_user/', $_SERVER['DOCUMENT_ROOT'] . '/bitrix/templates/bitrix24/components/bitrix/system.field.view/sladcovich_user/', true, true);
         CopyDirFiles(__DIR__ . '/templates/bitrix24/components/bitrix/system.field.view/sladcovich_crm_company/', $_SERVER['DOCUMENT_ROOT'] . '/bitrix/templates/bitrix24/components/bitrix/system.field.view/sladcovich_crm_company/', true, true);
         CopyDirFiles(__DIR__ . '/templates/bitrix24/components/bitrix/system.field.view/sladcovich_crm_contact_workers/', $_SERVER['DOCUMENT_ROOT'] . '/bitrix/templates/bitrix24/components/bitrix/system.field.view/sladcovich_crm_contact_workers/', true, true);
         CopyDirFiles(__DIR__ . '/templates/bitrix24/components/bitrix/system.field.view/sladcovich_grid_row_commands/', $_SERVER['DOCUMENT_ROOT'] . '/bitrix/templates/bitrix24/components/bitrix/system.field.view/sladcovich_grid_row_commands/', true, true);
+
+        // Добавления js в Bitrix
+        CopyDirFiles(__DIR__ . '/bitrix/js/', $_SERVER['DOCUMENT_ROOT'] . '/bitrix/js/', true, true);
 
         return true;
     }
@@ -176,15 +195,51 @@ Class sladcovich_worksheet extends \CModule
      */
     public function UnInstallFiles()
     {
+        // Удаление css и js
         Directory::deleteDirectory($_SERVER['DOCUMENT_ROOT'] . '/local/dist/sladcovich/');
-        Directory::deleteDirectory($_SERVER['DOCUMENT_ROOT'] . '/local/components/sladcovich/');
+
+        // Удаление компонентов sladcovich
+        Directory::deleteDirectory($_SERVER['DOCUMENT_ROOT'] . '/local/components/sladcovich/worksheet.calendar/');
+        Directory::deleteDirectory($_SERVER['DOCUMENT_ROOT'] . '/local/components/sladcovich/worksheet.create/');
+        Directory::deleteDirectory($_SERVER['DOCUMENT_ROOT'] . '/local/components/sladcovich/worksheet.registry/');
+        Directory::deleteDirectory($_SERVER['DOCUMENT_ROOT'] . '/local/components/sladcovich/worksheet.statistic/');
+
+        // Удаление раздела сайта
         Directory::deleteDirectory($_SERVER['DOCUMENT_ROOT'] . '/worksheet/');
 
+        // Удаление шаблонов компонентов Bitrix
         Directory::deleteDirectory($_SERVER['DOCUMENT_ROOT'] . '/bitrix/templates/bitrix24/components/bitrix/main.ui.filter/worksheet_registry_filter/');
         Directory::deleteDirectory($_SERVER['DOCUMENT_ROOT'] . '/bitrix/templates/bitrix24/components/bitrix/system.field.view/sladcovich_user/');
         Directory::deleteDirectory($_SERVER['DOCUMENT_ROOT'] . '/bitrix/templates/bitrix24/components/bitrix/system.field.view/sladcovich_crm_company/');
         Directory::deleteDirectory($_SERVER['DOCUMENT_ROOT'] . '/bitrix/templates/bitrix24/components/bitrix/system.field.view/sladcovich_crm_contact_workers/');
         Directory::deleteDirectory($_SERVER['DOCUMENT_ROOT'] . '/bitrix/templates/bitrix24/components/bitrix/system.field.view/sladcovich_grid_row_commands/');
+
+        // Удаление js в Bitrix
+        Directory::deleteDirectory($_SERVER['DOCUMENT_ROOT'] . '/worksheet/');
+
+        return true;
+    }
+
+    /**
+     * Install events
+     *
+     * @return bool
+     */
+    public function InstallEvents()
+    {
+        RegisterModuleDependences('main', 'onProlog', $this->MODULE_ID, '\\Sladcovich\\Worksheet\\Helpers\\EventHelper', 'addTabToCompanyCard', 1);
+
+        return true;
+    }
+
+    /**
+     * Uninstall events
+     *
+     * @return bool
+     */
+    public function UnInstallEvents()
+    {
+        UnRegisterModuleDependences('main', 'onProlog', $this->MODULE_ID, '\\Sladcovich\\Worksheet\\Helpers\\EventHelper', 'addTabToCompanyCard', 1);
 
         return true;
     }
