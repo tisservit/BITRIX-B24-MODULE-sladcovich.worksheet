@@ -103,14 +103,14 @@ class WorksheetRegistryComponent extends CBitrixComponent implements Controllera
             [
                 'id' => 'DATETIME_START',
                 'name' => Loc::getMessage('SLADCOVICH_WORKSHEET_REGISTRY_DATETIME_START'),
-                'type' => 'datetime',
+                'type' => 'date',
                 'time' => true,
                 'default' => true,
             ],
             [
                 'id' => 'DATETIME_END',
                 'name' => Loc::getMessage('SLADCOVICH_WORKSHEET_REGISTRY_DATETIME_END'),
-                'type' => 'datetime',
+                'type' => 'date',
                 'time' => true,
                 'default' => true,
             ],
@@ -135,7 +135,7 @@ class WorksheetRegistryComponent extends CBitrixComponent implements Controllera
             [
                 'id' => 'DATETIME_MODIFY',
                 'name' => Loc::getMessage('SLADCOVICH_WORKSHEET_REGISTRY_DATETIME_RESPONSIBLE_MODIFY_DATETIME'),
-                'type' => 'datetime',
+                'type' => 'date',
                 'time' => true,
                 'default' => true,
             ],
@@ -297,27 +297,50 @@ class WorksheetRegistryComponent extends CBitrixComponent implements Controllera
         $filterData = $filterOption->getFilter(self::getFilterColumns());
         $filter = [];
 
+        echo '<pre>';
+        echo 'SLADCOVICH'.'<br>';
+        var_export($filterData);
+        echo '</pre>';
+
         foreach ($filterData as $k => $v) {
 
             if ($k == 'SEARCH_WORKERS' || $k == 'SEARCH_USER' || $k == 'SEARCH_COMPANY') {
                 $filter[$k][] = '%' . $v . '%';
             }
 
-            if ($k == 'DATETIME_START') {
+            if ($k == 'DATETIME_START_datesel') {
                 $filter[] = [
-                    '>=DATETIME_START' => Bitrix\Main\Type\DateTime::createFromPhp(new \DateTime($v)),
+                       'LOGIC' => 'AND',
+                        [
+                            '>=DATETIME_START' => Bitrix\Main\Type\DateTime::createFromPhp(new \DateTime($filterData['DATETIME_START_from'])),
+                        ],
+                        [
+                            '<=DATETIME_START' => Bitrix\Main\Type\DateTime::createFromPhp(new \DateTime($filterData['DATETIME_START_to'])),
+                        ]
                 ];
             }
 
-            if ($k == 'DATETIME_END') {
+            if ($k == 'DATETIME_END_datesel') {
                 $filter[] = [
-                    '>=DATETIME_END' => Bitrix\Main\Type\DateTime::createFromPhp(new \DateTime($v)),
+                       'LOGIC' => 'AND',
+                        [
+                            '>=DATETIME_END' => Bitrix\Main\Type\DateTime::createFromPhp(new \DateTime($filterData['DATETIME_END_from'])),
+                        ],
+                        [
+                            '<=DATETIME_END' => Bitrix\Main\Type\DateTime::createFromPhp(new \DateTime($filterData['DATETIME_END_to'])),
+                        ]
                 ];
             }
 
-            if ($k == 'DATETIME_MODIFY') {
+            if ($k == 'DATETIME_MODIFY_datesel') {
                 $filter[] = [
-                    'DATETIME_MODIFY' => Bitrix\Main\Type\DateTime::createFromPhp(new \DateTime($v)),
+                       'LOGIC' => 'AND',
+                        [
+                            '>=DATETIME_MODIFY' => Bitrix\Main\Type\DateTime::createFromPhp(new \DateTime($filterData['DATETIME_MODIFY_from'])),
+                        ],
+                        [
+                            '<=DATETIME_MODIFY' => Bitrix\Main\Type\DateTime::createFromPhp(new \DateTime($filterData['DATETIME_MODIFY_to'])),
+                        ]
                 ];
             }
 
