@@ -297,11 +297,6 @@ class WorksheetRegistryComponent extends CBitrixComponent implements Controllera
         $filterData = $filterOption->getFilter(self::getFilterColumns());
         $filter = [];
 
-        echo '<pre>';
-        echo 'SLADCOVICH'.'<br>';
-        var_export($filterData);
-        echo '</pre>';
-
         foreach ($filterData as $k => $v) {
 
             if ($k == 'SEARCH_WORKERS' || $k == 'SEARCH_USER' || $k == 'SEARCH_COMPANY') {
