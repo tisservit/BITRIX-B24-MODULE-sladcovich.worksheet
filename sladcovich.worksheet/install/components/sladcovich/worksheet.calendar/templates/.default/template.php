@@ -128,18 +128,23 @@ Bitrix\Main\Page\Asset::getInstance()->addJs('/local/dist/sladcovich/tippy/js/ti
                     $('.fc-today-button').trigger('click');
                     $('.fc-today-button').attr('disabled', true);
                 }
+
                 setTimeout(reloadCalendar, 100);
             }
 
         });
     </script>
 
-    <div id='calendar'></div>
+    <div class="container-fluid mb-5 mt-5">
+        <div id='calendar'></div>
+    </div>
 
 <? else: ?>
 
-    <div class="alert alert-warning" role="alert">
-        <?=GetMessage('SLADCOVICH_WORKSHEET_CALENDAR_IT_IS_NO_CUSTOMER')?>
+    <div class="container-fluid mb-5 mt-5">
+        <div class="alert alert-warning" role="alert">
+            <?= GetMessage('SLADCOVICH_WORKSHEET_CALENDAR_IT_IS_NO_CUSTOMER') ?>
+        </div>
     </div>
 
 <? endif; ?>
