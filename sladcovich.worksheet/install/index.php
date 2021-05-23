@@ -93,9 +93,9 @@ Class sladcovich_worksheet extends \CModule
      */
     public function DoInstall()
     {
-        if (!$this->InstallDB()) {
-            return false; // break installation with error
-        }
+//        if (!$this->InstallDB()) {
+//            return false; // break installation with error
+//        }
         if (!$this->InstallFiles()) {
             return false; // break installation with error
         }
@@ -113,9 +113,9 @@ Class sladcovich_worksheet extends \CModule
      */
     public function DoUninstall()
     {
-        if (!$this->UnInstallDB()) {
-            return false; // break uninstallation with error
-        }
+//        if (!$this->UnInstallDB()) {
+//            return false; // break uninstallation with error
+//        }
         if (!$this->UnInstallFiles()) {
             return false; // break uninstallation with error
         }
@@ -180,7 +180,6 @@ Class sladcovich_worksheet extends \CModule
         CopyDirFiles(__DIR__ . '/templates/bitrix24/components/bitrix/system.field.view/sladcovich_user/', $_SERVER['DOCUMENT_ROOT'] . '/bitrix/templates/bitrix24/components/bitrix/system.field.view/sladcovich_user/', true, true);
         CopyDirFiles(__DIR__ . '/templates/bitrix24/components/bitrix/system.field.view/sladcovich_crm_company/', $_SERVER['DOCUMENT_ROOT'] . '/bitrix/templates/bitrix24/components/bitrix/system.field.view/sladcovich_crm_company/', true, true);
         CopyDirFiles(__DIR__ . '/templates/bitrix24/components/bitrix/system.field.view/sladcovich_crm_contact_workers/', $_SERVER['DOCUMENT_ROOT'] . '/bitrix/templates/bitrix24/components/bitrix/system.field.view/sladcovich_crm_contact_workers/', true, true);
-        CopyDirFiles(__DIR__ . '/templates/bitrix24/components/bitrix/system.field.view/sladcovich_grid_row_commands/', $_SERVER['DOCUMENT_ROOT'] . '/bitrix/templates/bitrix24/components/bitrix/system.field.view/sladcovich_grid_row_commands/', true, true);
 
         // Добавления js в Bitrix
         CopyDirFiles(__DIR__ . '/bitrix/js/', $_SERVER['DOCUMENT_ROOT'] . '/bitrix/js/', true, true);
@@ -212,7 +211,6 @@ Class sladcovich_worksheet extends \CModule
         Directory::deleteDirectory($_SERVER['DOCUMENT_ROOT'] . '/bitrix/templates/bitrix24/components/bitrix/system.field.view/sladcovich_user/');
         Directory::deleteDirectory($_SERVER['DOCUMENT_ROOT'] . '/bitrix/templates/bitrix24/components/bitrix/system.field.view/sladcovich_crm_company/');
         Directory::deleteDirectory($_SERVER['DOCUMENT_ROOT'] . '/bitrix/templates/bitrix24/components/bitrix/system.field.view/sladcovich_crm_contact_workers/');
-        Directory::deleteDirectory($_SERVER['DOCUMENT_ROOT'] . '/bitrix/templates/bitrix24/components/bitrix/system.field.view/sladcovich_grid_row_commands/');
 
         // Удаление js в Bitrix
         Directory::deleteDirectory($_SERVER['DOCUMENT_ROOT'] . '/worksheet/');

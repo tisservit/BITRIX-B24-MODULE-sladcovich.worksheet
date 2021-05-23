@@ -153,13 +153,6 @@ class WorksheetRegistryComponent extends CBitrixComponent implements Controllera
     {
         $columns = [
             [
-                'id' => 'COMMANDS',
-                'name' => Loc::getMessage('SLADCOVICH_WORKSHEET_REGISTRY_MENU'),
-                'sort' => false,
-                'default' => true,
-                'width' => 20
-            ],
-            [
                 'id' => 'DATETIME_START',
                 'name' => Loc::getMessage('SLADCOVICH_WORKSHEET_REGISTRY_DATETIME_START'),
                 'sort' => 'DATETIME_START',
@@ -224,6 +217,8 @@ class WorksheetRegistryComponent extends CBitrixComponent implements Controllera
 
         while ($row = $res->fetch()) {
 
+            $x = rand(1,10000);
+
             $arWorkersId = [];
 
             $subRes = WorkerTable::getList([
@@ -237,12 +232,7 @@ class WorksheetRegistryComponent extends CBitrixComponent implements Controllera
 
             $dataForGrid['DATA'][] = [
                 'data' => [
-                    'COMMANDS' => self::createField(
-                        [
-                            'ID' => $row['ID']
-                        ],
-                        'sladcovich_grid_row_commands'
-                    ),
+                    'ID' => intval($row['ID']),
                     'DATETIME_START' => Bitrix\Main\Type\DateTime::createFromPhp(new \DateTime($row['DATETIME_START'])),
                     'DATETIME_END' => Bitrix\Main\Type\DateTime::createFromPhp(new \DateTime($row['DATETIME_END'])),
                     'COMPANY' => self::createField(
@@ -267,6 +257,20 @@ class WorksheetRegistryComponent extends CBitrixComponent implements Controllera
                         'sladcovich_user'
                     ),
                     'DATETIME_MODIFY' => Bitrix\Main\Type\DateTime::createFromPhp(new \DateTime($row['DATETIME_MODIFY'])),
+                ],
+                'actions' => [
+                    [
+                        'text' => 'Редактировать',
+                        'onclick' => 'editWorksheet('.$row['ID'].')'
+                    ],
+                    [
+                        'text' => 'Копировать',
+                        'onclick' => 'copyWorksheet('.$row['ID'].')'
+                    ],
+                    [
+                        'text' => 'Удалить',
+                        'onclick' => 'deleteWorksheet('.$row['ID'].')'
+                    ]
                 ]
             ];
         }
@@ -427,24 +431,6 @@ class WorksheetRegistryComponent extends CBitrixComponent implements Controllera
                             'VALUE' => [
                                 'ID' => $arVars['ID'],
                                 'WORKERS' => $arWorkers,
-                            ],
-                        ],
-                    ],
-                    null,
-                    ['HIDE_ICONS' => 'Y']
-                );
-                break;
-            case 'sladcovich_grid_row_commands':
-                $APPLICATION->IncludeComponent(
-                    'bitrix:system.field.view',
-                    'sladcovich_grid_row_commands',
-                    [
-                        'bVarsFromForm' => [],
-                        'arUserField' => [
-                            'USER_TYPE' => 'sladcovich_grid_row_commands',
-                            'PROPERTY_VALUE_LINK' => '',
-                            'VALUE' => [
-                                'ID' => $arVars['ID'],
                             ],
                         ],
                     ],
